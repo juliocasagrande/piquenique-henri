@@ -5,33 +5,38 @@
   const navSteps = [...document.querySelectorAll('.wizard-step-dot')];
   const totalInput = document.getElementById('totalPessoasInput');
   const criancasInput = document.getElementById('criancasInput');
-  const bebemCervejaInput = document.getElementById('bebemCervejaInput');
-  const bebemEspumanteInput = document.getElementById('bebemEspumanteInput');
   const nome = document.getElementById('nome');
   const totalError = document.getElementById('totalError');
   const criancasError = document.getElementById('criancasError');
-  const beerError = document.getElementById('beerError');
-  const sparklingError = document.getElementById('sparklingError');
   const nomeError = document.getElementById('nomeError');
   const statusMessage = document.getElementById('statusMessage');
   const nextBtn = document.getElementById('nextBtn');
   const backBtn = document.getElementById('backBtn');
   const submitBtn = document.getElementById('submitBtn');
   const submitText = document.getElementById('submitText');
+  const attendBtn = document.getElementById('attendBtn');
+  const declineBtn = document.getElementById('declineBtn');
   const rsvpCard = document.getElementById('confirmar');
   const successCard = document.getElementById('successCard');
+  const successEyebrow = document.getElementById('successEyebrow');
+  const successTitle = document.getElementById('successTitle');
   const successText = document.getElementById('successText');
   const successRecap = document.getElementById('successRecap');
   const newResponseBtn = document.getElementById('newResponseBtn');
+  const responseDeadline = new Date('2026-10-05T00:00:00-04:00').getTime();
   let currentStep = 0;
+
   const clamp = (value, min, max) => Math.min(max, Math.max(min, Number.parseInt(value, 10) || 0));
   const plural = (value, one, many) => `${value} ${value === 1 ? one : many}`;
+  const deadlineClosed = () => Date.now() >= responseDeadline;
+
+  function showDeadlineMessage() {
+    statusMessage.textContent = 'O prazo para envio das respostas terminou em 04/10/2026.';
+  }
 
   function clearErrors() {
     totalError.textContent = '';
     criancasError.textContent = '';
-    beerError.textContent = '';
-    sparklingError.textContent = '';
     nomeError.textContent = '';
     statusMessage.textContent = '';
   }
@@ -40,9 +45,7 @@
     const total = clamp(totalInput.value, 1, 30);
     const criancas = clamp(criancasInput.value, 0, total);
     const adultos = Math.max(0, total - criancas);
-    const bebemCerveja = clamp(bebemCervejaInput.value, 0, adultos);
-    const bebemEspumante = clamp(bebemEspumanteInput.value, 0, adultos);
-    return { total, criancas, adultos, bebemCerveja, bebemEspumante };
+    return { total, criancas, adultos };
   }
 
   function syncState() {
@@ -50,42 +53,30 @@
     totalInput.value = state.total;
     criancasInput.max = state.total;
     criancasInput.value = state.criancas;
-    bebemCervejaInput.max = state.adultos;
-    bebemCervejaInput.value = state.bebemCerveja;
-    bebemEspumanteInput.max = state.adultos;
-    bebemEspumanteInput.value = state.bebemEspumante;
     document.getElementById('kidsTotalReference').textContent = plural(state.total, 'pessoa', 'pessoas');
     document.getElementById('adultosPreview').textContent = state.adultos;
-    document.getElementById('beerAdultsReference').textContent = plural(state.adultos, 'adulto', 'adultos');
-    document.getElementById('sparklingAdultsReference').textContent = plural(state.adultos, 'adulto', 'adultos');
     document.getElementById('summaryTotal').textContent = plural(state.total, 'pessoa', 'pessoas');
     document.getElementById('summaryKids').textContent = state.criancas;
     document.getElementById('summaryAdults').textContent = state.adultos;
-    document.getElementById('summaryBeerPeople').textContent = state.bebemCerveja;
-    document.getElementById('summarySparklingPeople').textContent = state.bebemEspumante;
     return state;
   }
 
   function validateStep(stepIndex) {
     clearErrors();
+    if (deadlineClosed()) {
+      showDeadlineMessage();
+      return false;
+    }
     const state = syncState();
-    if (stepIndex === 0 && (state.total < 1 || state.total > 30)) {
+    if (stepIndex === 1 && (state.total < 1 || state.total > 30)) {
       totalError.textContent = 'Informe entre 1 e 30 pessoas.';
       return false;
     }
-    if (stepIndex === 1 && state.criancas > state.total) {
+    if (stepIndex === 2 && state.criancas > state.total) {
       criancasError.textContent = 'A quantidade de crianças não pode ser maior que o total de pessoas.';
       return false;
     }
-    if (stepIndex === 2 && state.bebemCerveja > state.adultos) {
-      beerError.textContent = 'O número não pode ser maior que a quantidade de adultos.';
-      return false;
-    }
-    if (stepIndex === 3 && state.bebemEspumante > state.adultos) {
-      sparklingError.textContent = 'O número não pode ser maior que a quantidade de adultos.';
-      return false;
-    }
-    if (stepIndex === 4) {
+    if (stepIndex === 3) {
       const cleanName = nome.value.trim().replace(/\s+/g, ' ');
       if (cleanName.length < 2) {
         nomeError.textContent = 'Informe seu nome para concluir a confirmação.';
@@ -109,17 +100,52 @@
       item.setAttribute('aria-current', i === currentStep ? 'step' : 'false');
     });
     backBtn.hidden = currentStep === 0;
-    nextBtn.hidden = currentStep === steps.length - 1;
+    nextBtn.hidden = currentStep === 0 || currentStep === steps.length - 1;
     submitBtn.hidden = currentStep !== steps.length - 1;
     syncState();
     clearErrors();
-    const focusTarget = currentStep === 0 ? totalInput
-      : currentStep === 1 ? criancasInput
-      : currentStep === 2 ? bebemCervejaInput
-      : currentStep === 3 ? bebemEspumanteInput
-      : nome;
+
+    const focusTarget = currentStep === 0 ? attendBtn
+      : currentStep === 1 ? totalInput
+      : currentStep === 2 ? criancasInput
+      : currentStep === 3 ? nome
+      : submitBtn;
     setTimeout(() => focusTarget?.focus({ preventScroll: true }), 120);
+
+    if (deadlineClosed()) {
+      showDeadlineMessage();
+      attendBtn.disabled = true;
+      declineBtn.disabled = true;
+      nextBtn.disabled = true;
+      submitBtn.disabled = true;
+    }
   }
+
+  function showDeclineThankYou() {
+    successEyebrow.textContent = 'Resposta concluída';
+    successTitle.textContent = 'Obrigado por nos avisar!';
+    successText.textContent = 'Sentiremos sua falta no Piquenique do Henri.';
+    successRecap.innerHTML = '<span>Resposta: não participarei</span>';
+    rsvpCard.hidden = true;
+    successCard.hidden = false;
+    successCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  attendBtn.addEventListener('click', () => {
+    if (deadlineClosed()) {
+      showDeadlineMessage();
+      return;
+    }
+    showStep(1);
+  });
+
+  declineBtn.addEventListener('click', () => {
+    if (deadlineClosed()) {
+      showDeadlineMessage();
+      return;
+    }
+    showDeclineThankYou();
+  });
 
   document.querySelectorAll('.wizard-stepper').forEach(button => {
     button.addEventListener('click', () => {
@@ -133,23 +159,33 @@
     });
   });
 
-  [totalInput, criancasInput, bebemCervejaInput, bebemEspumanteInput].forEach(input => {
+  [totalInput, criancasInput].forEach(input => {
     input.addEventListener('input', () => { syncState(); clearErrors(); });
     input.addEventListener('change', syncState);
   });
-  nome.addEventListener('input', () => { nomeError.textContent = ''; statusMessage.textContent = ''; });
-  nextBtn.addEventListener('click', () => { if (validateStep(currentStep)) showStep(currentStep + 1); });
+
+  nome.addEventListener('input', () => {
+    nomeError.textContent = '';
+    statusMessage.textContent = '';
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (validateStep(currentStep)) showStep(currentStep + 1);
+  });
+
   backBtn.addEventListener('click', () => showStep(currentStep - 1));
 
   form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (!validateStep(4)) return;
+    if (!validateStep(3)) return;
     if (document.getElementById('website').value) return;
+
     const endpoint = String(config.endpoint || '');
     if (!endpoint.startsWith('https://script.google.com/')) {
       statusMessage.textContent = 'A lista ainda não está conectada à planilha.';
       return;
     }
+
     const state = syncState();
     const cleanName = nome.value.trim().replace(/\s+/g, ' ');
     const payload = {
@@ -157,17 +193,16 @@
       totalPessoas: state.total,
       criancas: state.criancas,
       adultos: state.adultos,
-      bebemCerveja: state.bebemCerveja,
-      bebemEspumante: state.bebemEspumante,
       acompanhantes: Math.max(0, state.total - 1),
-      bebemChopp: state.bebemCerveja,
       origem: window.location.href,
       enviadoEm: new Date().toISOString(),
       website: ''
     };
+
     submitBtn.disabled = true;
     submitText.textContent = 'Enviando...';
     statusMessage.textContent = '';
+
     try {
       await fetch(endpoint, {
         method: 'POST',
@@ -175,13 +210,14 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       });
+
+      successEyebrow.textContent = 'Presença registrada';
+      successTitle.textContent = 'Confirmação enviada!';
       successText.textContent = `${payload.nome}, recebemos a confirmação do seu grupo.`;
       const recap = [
         `👨‍👩‍👧‍👦 ${plural(payload.totalPessoas, 'pessoa', 'pessoas')}`,
         `🧑 ${plural(payload.adultos, 'adulto', 'adultos')}`,
-        `🧒 ${plural(payload.criancas, 'criança', 'crianças')}`,
-        `🍺 ${plural(payload.bebemCerveja, 'pessoa bebe cerveja', 'pessoas bebem cerveja')}`,
-        `🥂 ${plural(payload.bebemEspumante, 'pessoa bebe espumante', 'pessoas bebem espumante')}`
+        `🧒 ${plural(payload.criancas, 'criança', 'crianças')}`
       ];
       successRecap.innerHTML = recap.map(item => `<span>${item}</span>`).join('');
       rsvpCard.hidden = true;
@@ -201,11 +237,15 @@
     form.reset();
     totalInput.value = 1;
     criancasInput.value = 0;
-    bebemCervejaInput.value = 0;
-    bebemEspumanteInput.value = 0;
     nome.value = '';
+    successEyebrow.textContent = 'Presença registrada';
+    successTitle.textContent = 'Confirmação enviada!';
     successCard.hidden = true;
     rsvpCard.hidden = false;
+    attendBtn.disabled = false;
+    declineBtn.disabled = false;
+    nextBtn.disabled = false;
+    submitBtn.disabled = false;
     showStep(0);
     rsvpCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
