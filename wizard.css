@@ -60,3 +60,18 @@
 .success-recap span{padding:6px 10px;border-radius:999px;background:#edf5ff;color:var(--blue-900);font-size:.74rem;font-weight:800;border:1px solid #cfe0f3}
 @keyframes wizardIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
 @media(prefers-reduced-motion:reduce){.wizard-step{animation:none}}
+
+@media(max-width:600px){
+  .wizard-card,.wizard-card form,.wizard-body,.wizard-step,.step-card-content,.summary-content,.wizard-summary{min-width:0;max-width:100%}
+  .wizard-body{padding:10px}
+  .step-card-content{padding:16px 12px 18px;overflow:hidden}
+  .wizard-summary{grid-template-columns:minmax(0,1fr);width:100%}
+  .wizard-summary>div{width:100%;min-width:0}
+  .wizard-summary span,.wizard-summary strong{min-width:0}
+  .wizard-summary strong,.final-confirmation-note{overflow-wrap:anywhere}
+  .final-confirmation-note{width:100%;max-width:100%}
+  #rsvpForm>.wizard-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:10px 14px 14px}
+  #rsvpForm>.wizard-actions .wizard-back,
+  #rsvpForm>.wizard-actions .wizard-next,
+  #rsvpForm>.wizard-actions .wizard-submit{width:100%;max-width:100%;min-width:0;margin:0}
+}
