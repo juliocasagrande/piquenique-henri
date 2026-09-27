@@ -62,21 +62,32 @@
           <div>
             <p class="eyebrow">Lista de presença</p>
             <h2 id="rsvp-title">Confirme sua presença</h2>
-            <p class="wizard-subtitle">Preencha uma etapa por vez e confira tudo antes de enviar.</p>
+            <p class="wizard-subtitle">Preencha uma etapa por vez e confira tudo antes de enviar. Respostas até 04/10/2026.</p>
           </div>
         </div>
       </header>
       <nav class="wizard-steps-nav" aria-label="Etapas da confirmação">
-        <div class="wizard-step-dot is-active" data-nav-step="0"><span>1</span><small>Pessoas</small></div>
-        <div class="wizard-step-dot" data-nav-step="1"><span>2</span><small>Crianças</small></div>
-        <div class="wizard-step-dot" data-nav-step="2"><span>3</span><small>Cerveja</small></div>
-        <div class="wizard-step-dot" data-nav-step="3"><span>4</span><small>Espumante</small></div>
+        <div class="wizard-step-dot is-active" data-nav-step="0"><span>1</span><small>Presença</small></div>
+        <div class="wizard-step-dot" data-nav-step="1"><span>2</span><small>Pessoas</small></div>
+        <div class="wizard-step-dot" data-nav-step="2"><span>3</span><small>Crianças</small></div>
+        <div class="wizard-step-dot" data-nav-step="3"><span>4</span><small>Nome</small></div>
         <div class="wizard-step-dot" data-nav-step="4"><span>5</span><small>Revisão</small></div>
       </nav>
       <form id="rsvpForm" novalidate>
         <div class="wizard-body">
-          <section class="wizard-step is-active" data-step="0" aria-labelledby="step-total-title">
-            <div class="step-card-header"><div class="step-card-title"><span aria-hidden="true">👨‍👩‍👧‍👦</span><h3 id="step-total-title">Total de pessoas</h3></div><span class="step-count">1/5</span></div>
+          <section class="wizard-step is-active" data-step="0" aria-labelledby="step-attendance-title">
+            <div class="step-card-header"><div class="step-card-title"><span aria-hidden="true">👋</span><h3 id="step-attendance-title">Sua presença</h3></div><span class="step-count">1/5</span></div>
+            <div class="step-card-content">
+              <label class="question-label">Você vai ao Piquenique do Henri?</label>
+              <p class="step-help">Confirme sua resposta até o dia <strong>04/10/2026</strong>.</p>
+              <div class="wizard-actions">
+                <button class="wizard-back" type="button" id="declineBtn">Não vou</button>
+                <button class="wizard-next" type="button" id="attendBtn">Sim, vou</button>
+              </div>
+            </div>
+          </section>
+          <section class="wizard-step" data-step="1" aria-labelledby="step-total-title" hidden>
+            <div class="step-card-header"><div class="step-card-title"><span aria-hidden="true">👨‍👩‍👧‍👦</span><h3 id="step-total-title">Total de pessoas</h3></div><span class="step-count">2/5</span></div>
             <div class="step-card-content">
               <label class="question-label" for="totalPessoasInput">Quantas pessoas vão ao todo?</label>
               <p class="step-help">Conte todos do grupo: adultos + crianças.</p>
@@ -88,8 +99,8 @@
               <small class="error" id="totalError"></small>
             </div>
           </section>
-          <section class="wizard-step" data-step="1" aria-labelledby="step-kids-title" hidden>
-            <div class="step-card-header"><div class="step-card-title"><span aria-hidden="true">🧒</span><h3 id="step-kids-title">Crianças</h3></div><span class="step-count">2/5</span></div>
+          <section class="wizard-step" data-step="2" aria-labelledby="step-kids-title" hidden>
+            <div class="step-card-header"><div class="step-card-title"><span aria-hidden="true">🧒</span><h3 id="step-kids-title">Crianças</h3></div><span class="step-count">3/5</span></div>
             <div class="step-card-content">
               <label class="question-label" for="criancasInput">Do total informado, quantas são crianças?</label>
               <p class="step-help">Seu grupo tem <strong id="kidsTotalReference">1 pessoa</strong> no total.</p>
@@ -102,47 +113,24 @@
               <small class="error" id="criancasError"></small>
             </div>
           </section>
-          <section class="wizard-step" data-step="2" aria-labelledby="step-beer-title" hidden>
-            <div class="step-card-header"><div class="step-card-title"><span aria-hidden="true">🍺</span><h3 id="step-beer-title">Cerveja</h3></div><span class="step-count">3/5</span></div>
+          <section class="wizard-step" data-step="3" aria-labelledby="step-name-title" hidden>
+            <div class="step-card-header"><div class="step-card-title"><span aria-hidden="true">✍️</span><h3 id="step-name-title">Identificação</h3></div><span class="step-count">4/5</span></div>
             <div class="step-card-content">
-              <label class="question-label" for="bebemCervejaInput">Quantas pessoas bebem cerveja?</label>
-              <p class="step-help">Considere apenas os <strong id="beerAdultsReference">1 adulto</strong> do grupo.</p>
-              <div class="big-number-control drink-number-control" aria-label="Pessoas que bebem cerveja">
-                <button type="button" class="stepper wizard-stepper" data-target="bebemCervejaInput" data-step="-1" aria-label="Diminuir pessoas que bebem cerveja">−</button>
-                <div class="big-number-value"><input id="bebemCervejaInput" type="number" min="0" max="1" value="0" inputmode="numeric" /><span>🍺 pessoas</span></div>
-                <button type="button" class="stepper wizard-stepper" data-target="bebemCervejaInput" data-step="1" aria-label="Aumentar pessoas que bebem cerveja">+</button>
-              </div>
-              <small class="error" id="beerError"></small>
-            </div>
-          </section>
-          <section class="wizard-step" data-step="3" aria-labelledby="step-sparkling-title" hidden>
-            <div class="step-card-header"><div class="step-card-title"><span aria-hidden="true">🥂</span><h3 id="step-sparkling-title">Espumante</h3></div><span class="step-count">4/5</span></div>
-            <div class="step-card-content">
-              <label class="question-label" for="bebemEspumanteInput">Quantas pessoas bebem espumante?</label>
-              <p class="step-help">Considere apenas os <strong id="sparklingAdultsReference">1 adulto</strong> do grupo.</p>
-              <div class="big-number-control sparkling-number-control" aria-label="Pessoas que bebem espumante">
-                <button type="button" class="stepper wizard-stepper" data-target="bebemEspumanteInput" data-step="-1" aria-label="Diminuir pessoas que bebem espumante">−</button>
-                <div class="big-number-value"><input id="bebemEspumanteInput" type="number" min="0" max="1" value="0" inputmode="numeric" /><span>🥂 pessoas</span></div>
-                <button type="button" class="stepper wizard-stepper" data-target="bebemEspumanteInput" data-step="1" aria-label="Aumentar pessoas que bebem espumante">+</button>
-              </div>
-              <small class="error" id="sparklingError"></small>
-            </div>
-          </section>
-          <section class="wizard-step" data-step="4" aria-labelledby="step-summary-title" hidden>
-            <div class="step-card-header"><div class="step-card-title"><span aria-hidden="true">✓</span><h3 id="step-summary-title">Revisão</h3></div><span class="step-count">5/5</span></div>
-            <div class="step-card-content summary-content">
               <div class="field summary-name-field">
                 <label for="nome">Seu nome</label>
                 <input id="nome" name="nome" type="text" autocomplete="name" maxlength="100" placeholder="Ex.: Júlio Casagrande" required />
                 <small class="error" id="nomeError"></small>
               </div>
+            </div>
+          </section>
+          <section class="wizard-step" data-step="4" aria-labelledby="step-summary-title" hidden>
+            <div class="step-card-header"><div class="step-card-title"><span aria-hidden="true">✓</span><h3 id="step-summary-title">Revisão</h3></div><span class="step-count">5/5</span></div>
+            <div class="step-card-content summary-content">
               <p class="summary-intro">Confira os dados do seu grupo antes de confirmar.</p>
               <div class="wizard-summary" aria-live="polite">
                 <div><span>👨‍👩‍👧‍👦 Total</span><strong id="summaryTotal">1 pessoa</strong></div>
                 <div><span>🧑 Adultos</span><strong id="summaryAdults">1</strong></div>
                 <div><span>🧒 Crianças</span><strong id="summaryKids">0</strong></div>
-                <div><span>🍺 Bebem cerveja</span><strong id="summaryBeerPeople">0</strong></div>
-                <div><span>🥂 Bebem espumante</span><strong id="summarySparklingPeople">0</strong></div>
               </div>
               <div class="final-confirmation-note">Ao confirmar, essas informações serão enviadas para a lista da festa.</div>
             </div>
@@ -168,8 +156,8 @@
           <path d="M72 52h46l-23 38zM122 52h46l-23 38zM172 52h46l-23 38zM222 52h46l-23 38z" fill="#f0b429"/><circle cx="324" cy="76" r="5" fill="#f0b429"/><circle cx="366" cy="105" r="4" fill="#0b4aa0"/><path d="M343 58l5 12 13 2-10 8 3 13-11-7-11 7 3-13-10-8 13-2z" fill="#f0b429"/>
         </svg>
       </div>
-      <p class="eyebrow">Presença registrada</p>
-      <h2>Confirmação enviada!</h2>
+      <p class="eyebrow" id="successEyebrow">Presença registrada</p>
+      <h2 id="successTitle">Confirmação enviada!</h2>
       <p id="successText"></p>
       <div class="success-recap" id="successRecap"></div>
       <button type="button" class="secondary-btn" id="newResponseBtn">Registrar outra confirmação</button>
@@ -177,6 +165,6 @@
   </main>
   <footer><span>Feito com carinho para os 2 anos do Henri</span><span class="footer-star">✦</span></footer>
   <script src="config.js?v=20260818-0742"></script>
-  <script src="script.js?v=20260818-0742"></script>
+  <script src="script.js?v=20260927-rsvp"></script>
 </body>
 </html>
