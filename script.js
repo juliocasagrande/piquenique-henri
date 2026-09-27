@@ -204,12 +204,37 @@
     statusMessage.textContent = '';
 
     try {
-      await fetch(endpoint, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
+      const body = JSON.stringify(payload);
+      let queued = false;
+
+      if (navigator.sendBeacon) {
+        try {
+          const blob = new Blob([body], { type: 'text/plain;charset=utf-8' });
+          queued = navigator.sendBeacon(endpoint, blob);
+        } catch (beaconError) {
+          console.warn('sendBeacon indisponível para este envio.', beaconError);
+        }
+      }
+
+      if (!queued) {
+        const request = fetch(endpoint, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body,
+          keepalive: true,
+          cache: 'no-store'
+        });
+
+        // O Apps Script pode demorar para concluir e o modo no-cors não permite
+        // inspecionar a resposta. Mantemos o POST em andamento, mas não prendemos
+        // o usuário indefinidamente na tela "Enviando...".
+        request.catch(error => console.error('Falha no envio em segundo plano.', error));
+        await Promise.race([
+          request,
+          new Promise(resolve => setTimeout(resolve, 1500))
+        ]);
+      }
 
       successEyebrow.textContent = 'Presença registrada';
       successTitle.textContent = 'Confirmação enviada!';
